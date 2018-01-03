@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("MobileSync.ServerUnitTests")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCopyright("Copyright © 2018 Xamarin Inc., Microsoft.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -11,7 +11,7 @@ using Android.App;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Xamarin")]
 [assembly: AssemblyProduct("MovieSearch.Droid")]
-[assembly: AssemblyCopyright("Xamarin")]
+[assembly: AssemblyCopyright("Copyright (c) 2018 Xamarin Inc., Microsoft.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
