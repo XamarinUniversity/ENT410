@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Data Caching and Synchronization</title>
+    <link rel="stylesheet" type="text/css" href="./parts/res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./parts/res/styles/prettify.css">
+    <link rel="stylesheet" type="text/css" href="./parts/res/styles/styles.css">
+</head>
+
+<body>
+    <!-- This will be filled in at runtime -->
+    <header role="course-title"></header>
+
+    <section id="main">
+
+       <h2>Before you begin</h2>
+        <p>
+        This class uses a Xamarin.Forms application to demonstrate caching and synchronization. It supports iOS, Android and UWP. Please select the environment that is easiest for you to work on. To complete the coding exercises, you will need a Xamarin development environment with either a simulator/emulator that supports disabling the network, or a physical device to run the exercise on. Ideally you will be using the emulators to perform the work. 
+        Please read the <a href="https://university.xamarin.com/resources/setup-requirements">setup requirements</a> if you need help installing the Xamarin development environment.
+        </p>
+
+        <div class="hintblock">
+            <strong>ASP.NET Development environment</strong>
+            <br />
+            This class also includes a server-side component written in ASP.NET MVC using WebApi. You will not be editing this project during the exercises, but you may want to refer to it later. In order to run or modify the ASP.NET project you will need a Windows machine running Visual Studio 2017 or greater with a connected Microsoft SQL Server. We have uploaded an instance of the ASP.NET MVC site to Azure and the location is already configured within the lab exercise.
+        </div>
+
+        <h2>Overview</h2>
+        <p>
+            This class shows how to implement data centric mobile applications that will still work even when the application is offline. You will learn to cache data online for later online viewing and also how to implement apps that can create and edit data while offline and then synchronise the data so the view of the remote and local data are consistent.
+        </p>
+
+        <h2>Objectives</h2>
+        <ol>
+           <li>Determining your connectivity strategy</li>
+           <li>Caching results from a server</li>
+           <li>Synchronizing to a remote server</li>
+		   <li>Evaluating data sync tools</li>
+        </ol>
+
+        <h2>Lecture</h2>
+        <p><a href="./parts/slides.pdf">ENT410 - Data Caching and Synchronization</a>.</p>
+
+        <h2>Exercises</h2>
+        <p>
+            Exercise materials are available from <a href="https://github.com/XamarinUniversity/ENT410/">GitHub</a>. The code can be cloned through a desktop Git client or <a href="https://github.com/XamarinUniversity/ENT410/archive/master.zip">downloaded directly</a> as a ZIP file.
+        </p>
+        <ol>
+            <li>
+                <div class="objective">Caching Data from a remote service</div>
+                <a href="./parts/part1.html">Exercise</a>
+                <br />
+                In this exercise, we will connect to a remote service, cache its data locally and use that cached data to display the information when your application is offline.
+            </li>
+            <li>
+                <div class="objective">A coded offline synchronization mechanism</div>
+                <a target="_blank" href="https://github.com/XamarinUniversity/ENT410/tree/master/Demos/CustomerSync">Demonstration</a>
+                <br />
+                The demo code used by the instructor is available in the <b>Demos</b> folder of your copy of the cloned or downloaded <a target="_blank" href="https://github.com/XamarinUniversity/ENT410/">course materials</a>.
+            </li>
+        </ol>
+
+        <h2>Additional resources</h2>
+
+        <p>
+            In this class we will be creating mobile apps that take advantage of offline capabilities, here are some additional tips on working with the technology pieces you may need if you are not already familiar with them.
+        </p>
+
+        <strong class="indent-medium">ASP.NET</strong>
+        <div class="wslist">
+            <a target="_blank" href="http://www.asp.net/web-api">Programming the WebApi</a>        
+        </div>
+        <br />
+
+        <strong class="indent-medium">Mobile Plug-ins</strong>
+        <div class="wslist">
+            <a target="_blank" href="https://www.nuget.org/packages/Xam.Plugin.Connectivity/">Mobile Connectivity Plugin.</a> 
+            <span class="indent-medium">Covered in depth in XAM150 - Consuming REST-based Web Services.</span>
+        </div>
+        <br />
+
+        <strong class="indent-medium">Blog Posts</strong>
+        <div class="wslist">
+            <a target="_blank" href="https://RobGibbens.com/resilient-network-services-with-xamarin/">Resilient network services with mobile Xamarin apps</a> 
+        </div>
+        <br />
+
+        <strong class="indent-medium">Oracle MCS</strong>
+        <div class="wslist">
+            <a target="_blank" href="https://blogs.oracle.com/hands-on-with-mobile-tech/entry/intro_to_oracle_mobile_cloud">Hand-on with Oracle's Mobile Technology</a> <br>
+            <a target="_blank" href="https://components.xamarin.com/view/oraclemcs">Oracle Mobile Cloud Service SDK</a> 
+        </div>
+        <br />
+
+        <strong class="indent-medium">IBM MobileFirst</strong>
+        <div class="wslist">
+            <a target="_blank" href="https://components.xamarin.com/view/ibm-worklight">IBM MobileFirst SDK</a> <br>
+          <a target="_blank" href="https://xamarin.com/ibm">Xamarin and IBM bring cross-platform native apps to enterprise developers</a>  
+        </div>
+        <br />
+    </section>
+
+    <script src="./parts/res/js/jquery.min.js"></script>
+    <script src="./parts/res/js/prettify.js"></script>
+    <script src="./parts/res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft.<br><a target="_blank" href="http://university.xamarin.com">Visit Xamarin University for more classes and content</a></footer>
+</body>
+</html>
