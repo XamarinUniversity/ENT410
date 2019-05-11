@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Caching Data from a remote server</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>Data Caching and Synchronization</header>
+
+    <section id="main">
+
+        <h1 id="page-title"></h1>
+        
+        <h2>Duration</h2>
+        <p>25 minutes</p>
+
+        <div class="hintblock">
+            <strong>Tip:</strong> If you are doing this exercise live in a session, make sure to make good use of the instructor, they are online to answer any questions you have!
+        </div>
+
+        <h2>Goals</h2>
+        
+        <p>
+            The goal of this exercise is to modify a movie search application that connects to an external server to work offline by caching search results locally.
+        </p>
+
+        <!-- Include a screen shot of the completed project? -->
+		<img src="res/images/cached_data_app_screenshot.png" width="30%" height="30%" alt="iTunes Search API Service example using offline caching"/>
+
+        <!-- Include any differences about the OS or environment expectations
+             if there are changes from StartHere for this lab -->
+
+        <h2>Development environment notes</h2>
+        <p>
+            In order to test the application you will need either a real device or a simulator that allows turning the device network on and off. 
+            For Android you can use either a simulator or a physical device. For iOS it is preferred to use a real device. 
+            Refer to the slides demonstrating how to simulate network failures on the simulators or emulators.
+        </p>
+
+        <!-- Note any starter/complete or assets included in this lab. -->
+        <h2>Required assets</h2>
+        <p>
+            The provided <strong>Exercise 1</strong> folder contains both a starter project you will be modifying as well as a completed solution you can use to check your work.
+        </p>
+
+        <!-- Give them a challenge here, high-level steps of what we want them to do
+             so they can use this instead of the step-by-step (baby steps) included below -->
+        <h2>Exercise overview</h2>
+        <p>
+			We have an existing application that will connect to the network and download results from a server. 
+            You will modify the application to make it work while offline by checking for connectivity to the network and providing the ability to load data locally when no network connection is available.
+        </p>
+        <p>
+            Our basic steps will be:
+            <ol>
+               <li>Check for network connectivity</li>
+               <li>Store the data from the remote server to the local cache</li>
+		       <li>When the network is unavailable, load the cached results</li>
+            </ol>
+        </p>
+
+        <!-- Steps -->
+        <h1>Steps</h1>
+        <p>
+            Below are the step-by-step instructions to implement the exercise.
+        </p>
+
+        <h2>Check for network connectivity</h2>
+        <p>
+         In this section we are going to check for network connectivity when calling the network service and alter the application so it can use an offline cache when no connection is available.
+        </p>
+
+        <ol>
+            <li>
+               Open the solution <b>MovieSearch.sln</b> in the <b>Exercise 1/Start</b> folder. This Xamarin.Forms application solution has four projects in it:
+            </li>
+
+            <table class="grid">
+               <tr>
+                  <th>Project</th>
+                  <th>Description</th>
+               </tr>
+
+               <tr>
+                  <td>MovieSearch</td>
+                  <td>The PCL shared code project which contains the majority of the UI and business logic.</td>
+               </tr>
+
+               <tr>
+                  <td>MovieSearch.Droid</td>
+                  <td>The Android-specific platform project.</td>
+               </tr>
+
+               <tr>
+                  <td>MovieSearch.iOS</td>
+                  <td>The iOS-specific platform project.</td>
+               </tr>
+
+               <tr>
+                  <td>MovieSearch.UWP</td>
+                  <td>The Universal Windows Platform head project.</td>
+               </tr>
+
+            </table>
+            <br />
+
+            <li>
+               Add the <b>Connectivity Plugin for Xamarin</b> to each of the projects using Nuget. In Visual Studio for Mac, you will need to do this individually for each project by right clicking on the <b>Packages</b> folder and selecting "Add Packages". 
+               Visual Studio for Windows allows you to manage all the projects at once by right-clicking on the root solution node and selecting "Manage Nuget Packages".
+            </li>
+
+			   <li>
+               Open the <b>MovieRestService.cs</b> source file in the <b>RestService</b> folder in the <b>MovieSearch</b> project and locate the <code>GetMoviesForSearchAsync</code> method. Add a call to the top of this method to <code>CrossConnectivity.Current.IsRemoteReachable</code> to determine if you can connect to the server; use the <code>HostName</code> value as the target. If the method indicates that you cannot connect to the server, throw an Exception.
+               <ul class="indent-none">
+                  <li>
+                     <b>Hint:</b> the <code>IsRemoteReachable</code> method returns a <code>Task&lt;bool></code> so make sure to <code>await</code> it to get the result!
+                  </li>
+               </ul>
+            </li>
+		</ol>
+
+<p><a href="#" onclick="toggleCode(this,'connectivityCheck');return false;" class="uiitem">Show Code</a>
+<div class="indent-large" id="connectivityCheck" style="display:none;">
+<pre class="prettyprint">
+public async Task&lt;IList&lt;Movie>> GetMoviesForSearchAsync(string search, int pageNo = 1)
+{
+      // First check for Internet connectivity
+      <span class="highlight">if (!CrossConnectivity.Current.IsConnected)
+          throw new Exception("Cannot connect to the remote server.");</span>
+      ...
+}
+</pre></div></p>
+
+      <ol start="4">
+         <li>
+            Open <b>IncrementalSearchPage.cs</b> in the <b>Utility</b> folder.
+            <p>
+            This file is a base class used to provide all the incremental loading logic for some type (<code>T</code>). It provides the UI for a search bar, offline notification and loading activity indicator. You won't need to make any changes to this file in the lab, but it's a nice example of integrating some of these features into your app.
+            </p>
+          </li>
+
+          <li>
+             Locate the <code>DoLoadAsync</code> method. Examine the loading mechanism that is implemented.
+            <ul class="indent-none">
+              <li>
+                It first attempts to load the data from the network and if the network fails then it will fall back to loading content from the cache.
+              </li>
+              <li>
+                The data loading methods are virtual so our <b>MovieSearchPage.cs</b> file can override them and provide the specific behavior.
+              </li>
+              <li>
+                All attempts to load the content (online and offline) are wrapped in a <code>try / catch</code> in the event of a network fail at anytime. In this way we can use traditional <code>Exception</code> management to handle failures to the server for any reason.
+              </li>
+            </ul>
+          </li>
+     </ol>
+
+    <h2>Store the data from the remote server to the local cache</h2>
+    <p>
+        In this section we are going to alter our network calls so that when we receive data from the remote service it is saved to a local cache.
+    </p>
+
+	  <ol>
+		 <li>
+            Open the <b>MovieSearchPage.cs</b> file.
+         </li>
+
+		 <li>
+            After the data has loaded in the <code>LoadPageFromNetworkAsync</code> method, store the data to the local database using the <code>DataManager.StoreMoviesAsync</code> method just before it is returned from the method.
+         </li>
+      </ol>
+
+<p><a href="#" onclick="toggleCode(this,'loadPageFromNetwork');return false;" class="uiitem">Show Code</a>
+<div class="indent-large" id="loadPageFromNetwork" style="display:none;">
+<pre class="prettyprint">
+protected async override Task&lt;IList&lt;Movie>> LoadPageFromNetworkAsync ()
+{
+    var service = new MovieRestService ();
+
+    var data = await service.GetMoviesForSearchAsync(LastSearch, CurrentPage);
+    HasMoreData = data.Count == service.NumberOfMoviesPerRequest;
+
+    <span class="highlight">await DataManager.StoreMoviesAsync (data);</span>
+
+    return data;
+}
+</pre></div></p>
+
+      <ol start="3">
+
+			<li>
+            In the <b>Data</b> folder, open the <b>DataManager.cs</b> file and navigate to the <code>StoreMoviesAsync</code> method. This method currently has no implementation, but it needs to store all the passed records (the <code>movies</code> parameter) into the SQLite database.
+         </li>
+
+			<li>
+            Implement the method, here are some hints:
+            <ul class="indent-none">
+               <li>The primary key according to the iTunes services is stored in the <code>ID</code> column.</li> 
+               <li>Update the movies that you have retrieved from the service. On the <code>SqliteAsyncConnection</code> you can use the <code>InsertOrReplaceAsync</code> method to insert or update entries in the Movies table.</li>
+            </ul>
+            If you aren't familiar with SQLite, use the code below to fill in the implementation, and then make sure to take the <b>XAM160</b> class from Xamarin University!
+         </li> 
+		</ol>
+		
+<p><a href="#" onclick="toggleCode(this,'localStorage');return false;" class="uiitem">Show Code</a>
+<div class="indent-large" id="localStorage" style="display:none;">
+<pre class="prettyprint">
+public async static Task StoreMoviesAsync (IList<Movie> movies)
+{
+    CheckForExistingDatabase ();
+
+    foreach (Movie serverRecord in movies) 
+        await DB.InsertOrReplaceAsync (serverRecord).ConfigureAwait (false);
+}
+</pre></div></p>
+		
+		<h2>When the network is unavailable, load the cached results</h2>
+        <p>
+			In this section we are going to determine if the network is unavailable, and if so, load the results from the cache and notify the user.
+        </p>
+
+      <ol>
+			<li>
+            Open the <b>MovieSearchPage.cs</b> and navigate to the <code>LoadDataFromCacheAsync</code> method. This method currently returns <code>null</code>.
+         </li>
+
+			<li>
+            Implement the method so that it returns the records using <code>MovieSearch.DataManager.GetMoviesAsync</code> method.
+         </li> 
+		</ol>
+
+				<p><a href="#" onclick="toggleCode(this,'readFromCache');return false;" class="uiitem">Show Code</a>
+				<div class="indent-large" id="readFromCache" style="display:none;">
+				<pre class="prettyprint">
+protected override async Task&lt;IList&lt;Movie&gt;&gt; LoadDataFromCacheAsync ()
+{
+    <span class="highlight">return await DataManager.GetMoviesAsync (LastSearch);</span>
+}
+</pre></div></p>
+
+		<ol start="3">
+			<li>Run the application on a local device or simulator connected to the network and perform some data queries in order to populate your cache.</li>
+            <li>On your device or simulator, turn off the network access and attempt to perform the same search. You should be able to see the data populate from the cache.<br>
+            Note, the Google emulators will not lose connection to the IDE when airplane mode is enabled. It is recommended to launch the application from the emulator manually and then disable/enable airplane mode to test.</li>
+		</ol>
+		
+        <h1>Summary</h1>
+        <p>
+            In this exercise you enabled caching of data retrieved from a webservice and presented the cached data to the user when the device is not able to reach the webservice.
+        </p>
+      
+        <div class="align-right">
+            <a href="../Start%20Here.html">Go Back</a>
+        </div>
+    </section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft.</footer>
+</body>
+</html>
